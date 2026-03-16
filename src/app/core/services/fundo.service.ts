@@ -2,17 +2,38 @@ import { Injectable } from '@angular/core';
 import axios from 'axios';
 import {
   Fundo,
+  TipoFundo,
   CreateFundoRequest,
   UpdateFundoRequest,
   UpdatePatrimonioRequest,
 } from '../models/fundo.model';
+import { environment } from '../../../environments/environment';
 
 const api = axios.create({
-  baseURL: 'https://localhost:5001/api/fundo',
+  baseURL: `${environment.apiBaseUrl}/fundo`,
 });
+
+const tipoApi = axios.create({
+  baseURL: `${environment.apiBaseUrl}/tipofundo`,
+});
+
+const TIPO_LABELS: Record<string, string> = {
+  'RENDA FIXA': 'Renda Fixa',
+  'ACOES': 'Ações',
+  'MULTI MERCADO': 'Multimercado',
+};
 
 @Injectable({ providedIn: 'root' })
 export class FundoService {
+  formatTipo(nome: string): string {
+    return TIPO_LABELS[nome] ?? nome;
+  }
+
+  async getTipos(): Promise<TipoFundo[]> {
+    const { data } = await tipoApi.get<TipoFundo[]>('/');
+    return data.map((t) => ({ ...t, nome: this.formatTipo(t.nome) }));
+  }
+
   async getAll(): Promise<Fundo[]> {
     const { data } = await api.get<Fundo[]>('/');
     return data;

@@ -168,7 +168,7 @@ import { CnpjPipe } from '../../../shared/pipes/cnpj.pipe';
                         class="inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold"
                         [class]="getTipoBadgeClass(fundo.nomeTipo)"
                       >
-                        {{ fundo.nomeTipo }}
+                        {{ formatTipo(fundo.nomeTipo) }}
                       </span>
                     </td>
                     <td class="px-6 py-4 text-right">
@@ -225,14 +225,23 @@ import { CnpjPipe } from '../../../shared/pipes/cnpj.pipe';
       </div>
     </div>
 
-    @if (toast()) {
+    @if (toast(); as t) {
       <div class="fixed bottom-6 right-6 z-[60] flex items-center gap-3 rounded-xl border border-border bg-surface px-5 py-3.5 shadow-xl toast-in">
-        <div class="flex h-7 w-7 items-center justify-center rounded-full bg-success-light">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="20 6 9 17 4 12"/>
-          </svg>
-        </div>
-        <p class="text-sm font-medium text-foreground">{{ toast() }}</p>
+        @if (t.type === 'success') {
+          <div class="flex h-7 w-7 items-center justify-center rounded-full bg-success-light">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+          </div>
+        } @else {
+          <div class="flex h-7 w-7 items-center justify-center rounded-full bg-red-100">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </div>
+        }
+        <p class="text-sm font-medium text-foreground">{{ t.message }}</p>
       </div>
     }
 
@@ -283,7 +292,7 @@ export class FundosListComponent implements OnInit {
   fundos = signal<Fundo[]>([]);
   loading = signal(false);
   error = signal<string | null>(null);
-  toast = signal<string | null>(null);
+  toast = signal<{ message: string; type: 'success' | 'error' } | null>(null);
 
   showCreateForm = signal(false);
   showEditForm = signal(false);
@@ -303,17 +312,18 @@ export class FundosListComponent implements OnInit {
     this.loadFundos();
   }
 
+  private readonly tipoBadgeClasses: Record<string, string> = {
+    'RENDA FIXA': 'bg-blue-50 text-blue-700',
+    'ACOES': 'bg-rose-50 text-rose-700',
+    'MULTI MERCADO': 'bg-amber-50 text-amber-700',
+  };
+
+  formatTipo(tipo: string): string {
+    return this.fundoService.formatTipo(tipo);
+  }
+
   getTipoBadgeClass(tipo: string): string {
-    const map: Record<string, string> = {
-      'Renda Fixa': 'bg-blue-50 text-blue-700',
-      'Renda Variável': 'bg-purple-50 text-purple-700',
-      'Multimercado': 'bg-amber-50 text-amber-700',
-      'Multi Mercado': 'bg-amber-50 text-amber-700',
-      'Cambial': 'bg-emerald-50 text-emerald-700',
-      'Ações': 'bg-rose-50 text-rose-700',
-      'Acoes': 'bg-rose-50 text-rose-700',
-    };
-    return map[tipo] ?? 'bg-gray-50 text-gray-700';
+    return this.tipoBadgeClasses[tipo] ?? 'bg-gray-50 text-gray-700';
   }
 
   async loadFundos() {
@@ -357,7 +367,7 @@ export class FundosListComponent implements OnInit {
       this.showToast('Fundo criado com sucesso');
       this.loadFundos();
     } catch (err: any) {
-      this.showToast(err.response?.data?.message ?? 'Erro ao criar fundo');
+      this.showToast(err.response?.data?.message ?? 'Erro ao criar fundo', 'error');
     }
   }
 
@@ -374,7 +384,7 @@ export class FundosListComponent implements OnInit {
       this.showToast('Fundo atualizado com sucesso');
       this.loadFundos();
     } catch (err: any) {
-      this.showToast(err.response?.data?.message ?? 'Erro ao atualizar fundo');
+      this.showToast(err.response?.data?.message ?? 'Erro ao atualizar fundo', 'error');
     }
   }
 
@@ -386,7 +396,7 @@ export class FundosListComponent implements OnInit {
       this.showToast('Patrimônio movimentado com sucesso');
       this.loadFundos();
     } catch (err: any) {
-      this.showToast(err.response?.data?.message ?? 'Erro ao movimentar patrimônio');
+      this.showToast(err.response?.data?.message ?? 'Erro ao movimentar patrimônio', 'error');
     }
   }
 
@@ -398,12 +408,12 @@ export class FundosListComponent implements OnInit {
       this.showToast('Fundo excluído com sucesso');
       this.loadFundos();
     } catch (err: any) {
-      this.showToast(err.response?.data?.message ?? 'Erro ao excluir fundo');
+      this.showToast(err.response?.data?.message ?? 'Erro ao excluir fundo', 'error');
     }
   }
 
-  private showToast(message: string) {
-    this.toast.set(message);
+  private showToast(message: string, type: 'success' | 'error' = 'success') {
+    this.toast.set({ message, type });
     setTimeout(() => this.toast.set(null), 3000);
   }
 }

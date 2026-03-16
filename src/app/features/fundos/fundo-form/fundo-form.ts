@@ -1,4 +1,4 @@
-import { Component, input, output, OnInit, inject } from '@angular/core';
+import { Component, input, output, OnInit, inject, signal } from '@angular/core';
 import {
   ReactiveFormsModule,
   FormBuilder,
@@ -6,7 +6,8 @@ import {
   Validators,
 } from '@angular/forms';
 import { ModalComponent } from '../../../shared/components/modal/modal';
-import { Fundo, TIPOS_FUNDO } from '../../../core/models/fundo.model';
+import { Fundo, TipoFundo } from '../../../core/models/fundo.model';
+import { FundoService } from '../../../core/services/fundo.service';
 
 @Component({
   selector: 'app-fundo-form',
@@ -61,7 +62,7 @@ import { Fundo, TIPOS_FUNDO } from '../../../core/models/fundo.model';
             class="w-full rounded-lg border border-border bg-surface px-3.5 py-2.5 text-sm text-foreground hover:border-muted-foreground/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-150 outline-none appearance-none cursor-pointer"
           >
             <option [value]="0" disabled>Selecione o tipo</option>
-            @for (tipo of tipos; track tipo.codigo) {
+            @for (tipo of tipos(); track tipo.codigo) {
               <option [value]="tipo.codigo">{{ tipo.nome }}</option>
             }
           </select>
@@ -96,10 +97,12 @@ export class FundoFormComponent implements OnInit {
   saved = output<any>();
 
   private fb = inject(FormBuilder);
-  tipos = TIPOS_FUNDO;
+  private fundoService = inject(FundoService);
+  tipos = signal<TipoFundo[]>([]);
   form!: FormGroup;
 
   ngOnInit() {
+    this.fundoService.getTipos().then((t) => this.tipos.set(t));
     const f = this.fundo();
     this.form = this.fb.group({
       codigo: [
