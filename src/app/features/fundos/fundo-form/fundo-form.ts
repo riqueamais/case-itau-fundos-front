@@ -16,19 +16,17 @@ import { FundoService } from '../../../core/services/fundo.service';
   template: `
     <app-modal [title]="fundo() ? 'Editar Fundo' : 'Novo Fundo'" (closed)="closed.emit()">
       <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-5">
-        @if (!fundo()) {
-          <div>
-            <label class="mb-1.5 block text-sm font-medium text-foreground-secondary">Código</label>
-            <input
-              formControlName="codigo"
-              placeholder="Ex: FND001"
-              class="w-full rounded-lg border border-border bg-surface px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted-foreground hover:border-muted-foreground/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-150 outline-none"
-            />
-            @if (form.get('codigo')?.touched && form.get('codigo')?.errors) {
-              <p class="mt-1.5 text-xs text-destructive">Código é obrigatório (máx. 20 caracteres)</p>
-            }
-          </div>
-        }
+        <div>
+          <label class="mb-1.5 block text-sm font-medium text-foreground-secondary">Código</label>
+          <input
+            formControlName="codigo"
+            placeholder="Ex: FND001"
+            [class]="'w-full rounded-lg border border-border px-3.5 py-2.5 text-sm placeholder:text-muted-foreground transition-all duration-150 outline-none ' + (fundo() ? 'bg-background/50 cursor-not-allowed text-foreground/60 border-border/60' : 'bg-surface text-foreground hover:border-muted-foreground/50 focus:border-primary focus:ring-2 focus:ring-primary/20')"
+          />
+          @if (form.get('codigo')?.touched && form.get('codigo')?.errors) {
+            <p class="mt-1.5 text-xs text-destructive">Código é obrigatório (máx. 20 caracteres)</p>
+          }
+        </div>
 
         <div>
           <label class="mb-1.5 block text-sm font-medium text-foreground-secondary">Nome</label>
