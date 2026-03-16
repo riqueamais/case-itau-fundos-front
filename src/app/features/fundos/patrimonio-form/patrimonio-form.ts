@@ -40,9 +40,10 @@ import { Fundo } from '../../../core/models/fundo.model';
           <div class="relative">
             <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-muted font-medium">R$</span>
             <input
-              formControlName="valor"
-              type="number"
-              step="0.01"
+              type="text"
+              inputmode="numeric"
+              [value]="displayValue"
+              (input)="onInput($event)"
               placeholder="0,00"
               class="w-full rounded-lg border border-border bg-surface pl-10 pr-3.5 py-2.5 text-sm text-foreground font-mono placeholder:text-muted-foreground hover:border-muted-foreground/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-150 outline-none"
             />
@@ -83,6 +84,8 @@ export class PatrimonioFormComponent implements OnInit {
 
   private fb = inject(FormBuilder);
   form!: FormGroup;
+  displayValue = '';
+  private isNegative = false;
 
   ngOnInit() {
     this.form = this.fb.group({
@@ -95,6 +98,34 @@ export class PatrimonioFormComponent implements OnInit {
       style: 'currency',
       currency: 'BRL',
     });
+  }
+
+  onInput(event: Event) {
+    const raw = (event.target as HTMLInputElement).value;
+
+    this.isNegative = raw.includes('-');
+
+    const digits = raw.replace(/\D/g, '');
+
+    if (!digits) {
+      this.displayValue = '';
+      this.form.get('valor')?.setValue(null);
+      return;
+    }
+
+    const cents = parseInt(digits, 10);
+    const numericValue = cents / 100;
+
+    this.displayValue = numericValue.toLocaleString('pt-BR', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+
+    if (this.isNegative) {
+      this.displayValue = '-' + this.displayValue;
+    }
+
+    this.form.get('valor')?.setValue(this.isNegative ? -numericValue : numericValue);
   }
 
   onSubmit() {
