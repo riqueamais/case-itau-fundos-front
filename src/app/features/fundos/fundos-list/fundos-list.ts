@@ -24,12 +24,12 @@ import { CnpjPipe } from '../../../shared/pipes/cnpj.pipe';
   ],
   template: `
     <div class="w-full mx-auto max-w-7xl px-8 py-8">
-      <div class="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
+      <div class="mb-8 grid grid-cols-1 gap-4 lg:grid-cols-3">
         <div class="rounded-2xl bg-surface border border-border p-5 shadow-sm">
           <div class="flex items-center justify-between">
             <div>
               <p class="text-xs font-medium text-muted uppercase tracking-wider">Total de Fundos</p>
-              <p class="mt-2 text-3xl font-bold text-foreground tabular-nums">{{ fundos().length }}</p>
+              <h3 class="mt-2 text-xl sm:text-2xl xl:text-3xl font-bold text-foreground tabular-nums">{{ fundos().length }}</h3>
             </div>
             <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-navy-50">
               <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#003882" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -44,9 +44,9 @@ import { CnpjPipe } from '../../../shared/pipes/cnpj.pipe';
           <div class="flex items-center justify-between">
             <div>
               <p class="text-xs font-medium text-muted uppercase tracking-wider">Patrimônio Total</p>
-              <p class="mt-2 text-3xl font-bold text-foreground tabular-nums">
+              <h3 class="mt-2 text-xl sm:text-2xl xl:text-3xl font-bold text-foreground tabular-nums">
                 {{ totalPatrimonio() | currency:'BRL':'symbol':'1.0-0':'pt-BR' }}
-              </p>
+              </h3>
             </div>
             <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-success-light">
               <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -61,7 +61,7 @@ import { CnpjPipe } from '../../../shared/pipes/cnpj.pipe';
           <div class="flex items-center justify-between">
             <div>
               <p class="text-xs font-medium text-muted uppercase tracking-wider">Tipos Cadastrados</p>
-              <p class="mt-2 text-3xl font-bold text-foreground tabular-nums">{{ tiposUnicos() }}</p>
+              <h3 class="mt-2 text-xl sm:text-2xl xl:text-3xl font-bold text-foreground tabular-nums">{{ tiposUnicos() }}</h3>
             </div>
             <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-primary-50">
               <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#EC7000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -75,14 +75,14 @@ import { CnpjPipe } from '../../../shared/pipes/cnpj.pipe';
       </div>
 
       <div class="rounded-2xl bg-surface border border-border shadow-sm overflow-hidden">
-        <div class="flex items-center justify-between border-b border-border px-6 py-4">
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-2 border-b border-border px-6 py-4">
           <div>
             <h2 class="text-base font-semibold text-foreground">Fundos de Investimento</h2>
             <p class="mt-0.5 text-xs text-muted">Gerencie seus fundos cadastrados</p>
           </div>
           <button
             (click)="openCreate()"
-            class="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-primary-hover active:scale-[0.98] transition-all duration-150"
+            class="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-primary-hover active:scale-[0.98] transition-all duration-150"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             Novo Fundo
